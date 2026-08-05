@@ -1,0 +1,30 @@
+# Terraform/OpenTofu state files
+**/*.tfstate
+**/*.tfstate.*
+**/.terraform.tfstate.lock.info
+
+# Crash logs
+**/crash.log
+**/crash.*.log
+
+# Terraform/OpenTofu working directory
+**/.terraform/
+
+# Terraform/OpenTofu plan files
+**/*.tfplan
+**/*.plan
+
+# Override files (local customizations)
+**/override.tf
+**/override.tf.json
+**/*_override.tf
+**/*_override.tf.json
+
+# CLI configuration files
+**/.terraformrc
+**/terraform.rc
+**/.tofurc
+**/tofu.rc
+
+# Terraform/OpenTofu logs
+**/*.log

@@ -1,0 +1,17 @@
+# Sensitive local files
+**/*.pem
+**/*.key
+**/*.crt
+
+# OS/editor files
+**/.DS_Store
+**/Thumbs.db
+**/.idea/
+**/.vscode/
+
+# Temporary files
+**/*.tmp
+**/*.bak
+**/*.swp
+**/*.swo
+**/*~

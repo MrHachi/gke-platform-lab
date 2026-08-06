@@ -19,8 +19,8 @@ terraform {
 
 provider "google" {
   project = "gke-platform-lab"
-  region  = "us-south1"
-  zone    = "us-south1-a"
+  region  = local.region
+  zone    = local.zone
 
   default_labels = {
     managed_by = "tf"

@@ -11,6 +11,7 @@ resource "google_compute_subnetwork" "subnet" {
   for_each = var.subnet_config
 
   network = google_compute_network.main.name
+  region  = each.value.region
   name    = "${var.stack}-subnet-${each.key}"
 
   ip_cidr_range = each.value.main

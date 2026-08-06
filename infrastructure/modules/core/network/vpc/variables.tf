@@ -5,6 +5,7 @@ variable "stack" {
 
 variable "subnet_config" {
   type = map(object({
+    region    = string
     main      = string
     secondary = map(string)
     dualstack = optional(bool, false)

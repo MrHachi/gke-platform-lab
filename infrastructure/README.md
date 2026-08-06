@@ -35,5 +35,5 @@ infrastructure/
 
 ## `core` stacks
 
-- [network](/infrastructure/stacks/core/network/README.md)
-- [platform](/infrastructure/stacks/core/platform/README.md)
+- [network](/infrastructure/stacks/core/network)
+- [platform](/infrastructure/stacks/core/platform)

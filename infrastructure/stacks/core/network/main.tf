@@ -1,7 +1,7 @@
 locals {
   stack  = "lab-network"
   region = "us-south1"
-  zone   = "us-south1-a" # only used for provider configuration presently
+  zone   = "${local.region}-a" # only used for provider configuration presently
 
   gke_subnet_name                = "gke"
   gke_subnet_pods_range_name     = "pods"

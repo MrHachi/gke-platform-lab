@@ -3,5 +3,13 @@ output "vpc_name" {
 }
 
 output "gke_subnet_name" {
-  value = module.vpc.subnet_names.gke
+  value = local.gke_subnet_name
+}
+
+output "gke_subnet_pods_range_name" {
+  value = local.gke_subnet_pods_range_name
+}
+
+output "gke_subnet_services_range_name" {
+  value = local.gke_subnet_services_range_name
 }

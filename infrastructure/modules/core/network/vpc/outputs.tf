@@ -3,9 +3,14 @@ output "vpc_name" {
   description = "VPC name"
 }
 
-output "subnet_names" {
+output "subnet_config" {
   value = {
-    gke = google_compute_subnetwork.gke.name
+    for name, subnet in google_compute_subnetwork.subnet :
+    name => {
+      main_cidr_ipv4      = subnet.ip_cidr_range
+      secondary_cidr_ipv4 = var.subnet_config[name].secondary # not exposed via attributes-needs to be taken from vars
+      cidr_ipv6           = subnet.ipv6_cidr_range
+    }
   }
-  description = "Names of the subnets created by this module"
+  description = "Map of subnet names to configuration"
 }

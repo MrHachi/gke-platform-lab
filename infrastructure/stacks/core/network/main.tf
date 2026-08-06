@@ -1,5 +1,9 @@
 locals {
   stack = "lab-network"
+
+  gke_subnet_name                = "gke"
+  gke_subnet_pods_range_name     = "pods"
+  gke_subnet_services_range_name = "services"
 }
 
 module "vpc" {
@@ -8,9 +12,14 @@ module "vpc" {
 
   stack = local.stack
 
-  cidr_ipv4 = {
-    main     = "10.16.0.0/16"
-    pods     = "10.17.0.0/16"
-    services = "10.18.0.0/20"
+  subnet_config = {
+    (local.gke_subnet_name) = {
+      main = "10.16.0.0/16"
+      secondary = {
+        (local.gke_subnet_pods_range_name)     = "10.17.0.0/16"
+        (local.gke_subnet_services_range_name) = "10.18.0.0/20"
+      }
+      dualstack = true
+    }
   }
 }

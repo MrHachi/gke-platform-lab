@@ -7,20 +7,24 @@ resource "google_compute_network" "main" {
   auto_create_subnetworks = "false"
 }
 
-resource "google_compute_subnetwork" "gke" {
-  network = google_compute_network.main.name
-  name    = "${var.stack}-subnet-1"
+resource "google_compute_subnetwork" "subnet" {
+  for_each = var.subnet_config
 
-  stack_type    = "IPV4_IPV6"
-  ip_cidr_range = var.cidr_ipv4.main
-  secondary_ip_range {
-    range_name    = "pods"
-    ip_cidr_range = var.cidr_ipv4.pods
+  network = google_compute_network.main.name
+  name    = "${var.stack}-subnet-${each.key}"
+
+  stack_type    = each.value.dualstack ? "IPV4_IPV6" : "IPV4_ONLY"
+  ip_cidr_range = each.value.main
+
+  dynamic "secondary_ip_range" {
+    for_each = each.value.secondary
+
+    content {
+      range_name    = secondary_ip_range.key
+      ip_cidr_range = secondary_ip_range.value
+    }
   }
-  secondary_ip_range {
-    range_name    = "services"
-    ip_cidr_range = var.cidr_ipv4.services
-  }
-  ipv6_access_type         = "EXTERNAL"
+
+  ipv6_access_type         = each.value.dualstack ? "EXTERNAL" : null
   private_ip_google_access = true
 }

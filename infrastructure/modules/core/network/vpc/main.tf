@@ -13,7 +13,6 @@ resource "google_compute_subnetwork" "subnet" {
   network = google_compute_network.main.name
   name    = "${var.stack}-subnet-${each.key}"
 
-  stack_type    = each.value.dualstack ? "IPV4_IPV6" : "IPV4_ONLY"
   ip_cidr_range = each.value.main
 
   dynamic "secondary_ip_range" {
@@ -25,6 +24,9 @@ resource "google_compute_subnetwork" "subnet" {
     }
   }
 
-  ipv6_access_type         = each.value.dualstack ? "EXTERNAL" : null
-  private_ip_google_access = true
+  stack_type       = each.value.dualstack ? "IPV4_IPV6" : "IPV4_ONLY"
+  ipv6_access_type = each.value.dualstack ? "EXTERNAL" : null
+
+  private_ip_google_access   = true
+  private_ipv6_google_access = true
 }

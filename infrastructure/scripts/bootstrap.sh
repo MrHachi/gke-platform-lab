@@ -19,9 +19,14 @@ SERVICE_ACCOUNT_NAME_BASE="github-actions"
 
 plan_account_name="${SERVICE_ACCOUNT_NAME_BASE}-plan"
 apply_account_name="${SERVICE_ACCOUNT_NAME_BASE}-apply"
+artifact_account_name="${SERVICE_ACCOUNT_NAME_BASE}-artifacts"
 plan_sa="${plan_account_name}@${project_id}.iam.gserviceaccount.com"
 apply_sa="${apply_account_name}@${project_id}.iam.gserviceaccount.com"
+artifact_sa="${artifact_account_name}@${project_id}.iam.gserviceaccount.com"
+
 bucket="${project_id}-tfstate"
+core_state_prefix="state/core/"
+artifact_prefix="artifacts/core/"
 
 
 gcloud auth login
@@ -90,6 +95,11 @@ ensure_service_accounts() {
         gcloud iam service-accounts create "${apply_account_name}" \
             --project="${project_id}"
 
+    echo "${artifact_account_name}" ; \
+    gcloud iam service-accounts describe "${artifact_sa}" --project="${project_id}" > /dev/null 2>&1 || \
+        gcloud iam service-accounts create "${artifact_account_name}" \
+            --project="${project_id}"
+
     echo "${plan_account_name} policy-binding" ; \
     gcloud iam service-accounts add-iam-policy-binding "${plan_sa}" \
         --project="${project_id}" \
@@ -98,6 +108,12 @@ ensure_service_accounts() {
 
     echo "${apply_account_name} policy-binding" ; \
     gcloud iam service-accounts add-iam-policy-binding "${apply_sa}" \
+        --project="${project_id}" \
+        --role="roles/iam.workloadIdentityUser" \
+        --member="principalSet://iam.googleapis.com/projects/${project_number}/locations/global/workloadIdentityPools/${WORKLOAD_IDENTITY_POOL_NAME}/attribute.repository/${repo_owner}/${repo_name}"
+
+    echo "${artifact_account_name} policy-binding" ; \
+    gcloud iam service-accounts add-iam-policy-binding "${artifact_sa}" \
         --project="${project_id}" \
         --role="roles/iam.workloadIdentityUser" \
         --member="principalSet://iam.googleapis.com/projects/${project_number}/locations/global/workloadIdentityPools/${WORKLOAD_IDENTITY_POOL_NAME}/attribute.repository/${repo_owner}/${repo_name}"
@@ -121,12 +137,20 @@ ensure_state_bucket_permissions() {
     echo "${plan_sa}"
     gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
         --member="serviceAccount:${plan_sa}" \
-        --role="roles/storage.objectViewer"
+        --role="roles/storage.objectViewer" \
+        --condition="title=State prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}')"
 
     echo "${apply_sa}"
     gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
         --member="serviceAccount:${apply_sa}" \
-        --role="roles/storage.objectAdmin"
+        --role="roles/storage.objectAdmin" \
+        --condition="title=State prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}')"
+
+    echo "${artifact_sa}"
+    gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
+        --member="serviceAccount:${artifact_sa}" \
+        --role="roles/storage.objectUser" \
+        --condition="title=Artifact prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${artifact_prefix}')"
 }
 
 ensure_iac_permissions() {
@@ -173,5 +197,8 @@ echo "plan-account: ${plan_sa}"
 echo
 echo "apply-account: ${apply_sa}"
 echo
+echo "artifact-account: ${artifact_sa}"
+echo
 echo "terraform-backend:"
 echo "  bucket: \"${bucket}\""
+echo "  state-prefix: \"${core_state_prefix}\""

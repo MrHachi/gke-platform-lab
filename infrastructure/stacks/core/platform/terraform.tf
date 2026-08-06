@@ -6,7 +6,7 @@ terraform {
   # gcloud auth application-default login
   backend "gcs" {
     bucket = "gke-platform-lab-tfstate"
-    prefix = "core/platform"
+    prefix = "state/core/network"
   }
 
   required_providers {

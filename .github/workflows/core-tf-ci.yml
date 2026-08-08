@@ -156,13 +156,14 @@ jobs:
           file: infrastructure/stacks/core/network/tfplan.json
           config_file: infrastructure/stacks/core/network/.checkov.yml
           output_format: github_failed_only
+          output_file_path: infrastructure/stacks/core/network/scan
 
       - name: Post scan results to PR
         if: failure()
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/network/checkov.md
+          input-file: infrastructure/stacks/core/network/scan/results_github_failed_only.md # discovered with ls
 
   plan-platform:
     runs-on: ubuntu-latest
@@ -216,11 +217,11 @@ jobs:
           file: infrastructure/stacks/core/platform/tfplan.json
           config_file: infrastructure/stacks/core/platform/.checkov.yml
           output_format: github_failed_only
-          output_file_path: infrastructure/stacks/core/platform/checkov.md
+          output_file_path: infrastructure/stacks/core/platform/scan
 
       - name: Post scan results to PR
         if: failure()
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/platform/checkov.md
+          input-file: infrastructure/stacks/core/platform/scan/results_github_failed_only.md

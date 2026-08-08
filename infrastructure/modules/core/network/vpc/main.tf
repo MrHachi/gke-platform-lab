@@ -29,5 +29,5 @@ resource "google_compute_subnetwork" "subnet" {
   ipv6_access_type = each.value.dualstack ? "EXTERNAL" : null
 
   private_ip_google_access   = true
-  private_ipv6_google_access = "ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE"
+  private_ipv6_google_access = "ENABLE_OUTBOUND_VM_TO_GOOGLE"
 }

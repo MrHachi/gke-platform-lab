@@ -16,6 +16,7 @@ repo_name="${REPO_NAME}"
 WORKLOAD_IDENTITY_POOL_NAME="github-actions-pool"
 PROVIDER_NAME="github-actions-id-provider"
 SERVICE_ACCOUNT_NAME_BASE="github-actions"
+TFSTATE_INIT_ROLE_NAME="tfstateInitializer"
 
 plan_account_name="${SERVICE_ACCOUNT_NAME_BASE}-plan"
 apply_account_name="${SERVICE_ACCOUNT_NAME_BASE}-apply"
@@ -134,20 +135,38 @@ ensure_state_bucket() {
 ensure_state_bucket_permissions() {
     echo "Ensure state bucket permissions"
 
+    echo "${TFSTATE_INIT_ROLE_NAME}"
+    if ! gcloud iam roles describe "${TFSTATE_INIT_ROLE_NAME}" \
+        --project="${project_id}" >/dev/null 2>&1; then
+        gcloud iam roles create "${TFSTATE_INIT_ROLE_NAME}" \
+            --project="${project_id}" \
+            --title="State Initializer" \
+            --description="Allows a SA to create state objects during TF initialization" \
+            --permissions="storage.objects.create"
+    fi
+
     echo "${plan_sa}"
-    gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
         --member="serviceAccount:${plan_sa}" \
         --role="roles/storage.objectViewer" \
         --condition="title=State prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}')"
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
+        --member="serviceAccount:${plan_sa}" \
+        --role="roles/storage.objectAdmin" \
+        --condition="title=State lock access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}') && resource.name.endsWith('.tflock')"
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
+        --member="serviceAccount:${plan_sa}" \
+        --role="projects/${project_id}/roles/${TFSTATE_INIT_ROLE_NAME}" \
+        --condition="title=State initialization,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}') && resource.name.endsWith('.tfstate')"
 
     echo "${apply_sa}"
-    gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
         --member="serviceAccount:${apply_sa}" \
         --role="roles/storage.objectAdmin" \
         --condition="title=State prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}')"
 
     echo "${artifact_sa}"
-    gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
         --member="serviceAccount:${artifact_sa}" \
         --role="roles/storage.objectUser" \
         --condition="title=Artifact prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_artifact_prefix}')"

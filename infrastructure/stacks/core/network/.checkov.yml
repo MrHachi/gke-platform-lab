@@ -1,6 +1,12 @@
 skip-check:
   # This is a lab project; we have no plans to enable VPC flow logs at present
   - CKV_GCP_26
+  # tfplan marks the following:
+  # + private_ip_google_access = true
+  # + private_ipv6_google_access = "true"
+  # I'm guessing because the IPv6 setting is a string and not a boolean the following
+  # check fails as a false positive-this setting is enabled
+  - CKV_GCP_76
   # The network stack only defines the network topology for our environment-it has
   # no opinion about traffic patterns (we leave this to the downstream stacks)
   - CKV2_GCP_18

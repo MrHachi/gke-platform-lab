@@ -135,8 +135,8 @@ jobs:
           echo '# network stack plan' > comment.md
           echo '```text' >> comment.md
           set +e
-          tofu plan -no-color -detailed-exitcode -lock=false -out=tfplan | tee -a comment.md
-          status=${PIPESTATUS[0]}
+          tofu plan -no-color -detailed-exitcode -lock=false -out=tfplan >> comment.md
+          status=$?
           set -e
           echo '```' >> comment.md
 
@@ -150,20 +150,11 @@ jobs:
             echo "Be sure to deploy network stack manually before merging." >> comment.md
           fi
 
-      - name: Comment on PR
+      - name: Post plan to PR
         continue-on-error: true
-        uses: actions/github-script@v9
+        uses: .github/actions/comment-on-pr
         with:
-          script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('infrastructure/stacks/core/network/comment.md', 'utf8');
-
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            })
+          input-file: infrastructure/stacks/core/network/comment.md
 
       - name: Convert plan to JSON
         run: tofu show -json -plan=tfplan > tfplan.json
@@ -174,6 +165,12 @@ jobs:
           file: infrastructure/stacks/core/network/tfplan.json
           config_file: infrastructure/stacks/core/network/.checkov.yml
           output_format: github_failed_only
+
+      - name: Post scan results to PR
+        continue-on-error: true
+        uses: .github/actions/comment-on-pr
+        with:
+          input-file: infrastructure/stacks/core/network/checkov.md
 
   plan-platform:
     runs-on: ubuntu-latest
@@ -210,23 +207,14 @@ jobs:
         run: |
           echo '# platform stack plan' > comment.md
           echo '```text' >> comment.md
-          tofu plan -no-color -lock=false -out=tfplan | tee -a comment.md
+          tofu plan -no-color -lock=false -out=tfplan >> comment.md
           echo '```' >> comment.md
 
-      - name: Comment on PR
+      - name: Post plan to PR
         continue-on-error: true
-        uses: actions/github-script@v9
+        uses: .github/actions/comment-on-pr
         with:
-          script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('infrastructure/stacks/core/platform/comment.md', 'utf8');
-
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            })
+          input-file: infrastructure/stacks/core/platform/comment.md
 
       - name: Convert plan to JSON
         run: tofu show -json -plan=tfplan > tfplan.json
@@ -237,3 +225,10 @@ jobs:
           file: infrastructure/stacks/core/platform/tfplan.json
           config_file: infrastructure/stacks/core/platform/.checkov.yml
           output_format: github_failed_only
+          output_file_path: infrastructure/stacks/core/platform/checkov.md
+
+      - name: Post scan results to PR
+        continue-on-error: true
+        uses: .github/actions/comment-on-pr
+        with:
+          input-file: infrastructure/stacks/core/platform/checkov.md

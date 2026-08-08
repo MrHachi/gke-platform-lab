@@ -105,6 +105,7 @@ jobs:
       - lint
     permissions:
       contents: read
+      pull-requests: write
       id-token: write
     defaults:
       run:
@@ -179,6 +180,7 @@ jobs:
       - plan-network
     permissions:
       contents: read
+      pull-requests: write
       id-token: write
     defaults:
       run:

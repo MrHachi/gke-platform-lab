@@ -1,0 +1,55 @@
+name: Core TF Deploy
+
+on:
+  push:
+    tags:
+      - core-v**
+
+env:
+  tofu-version: 1.12.0
+
+jobs:
+  execute-platform-plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: infrastructure/stacks/core/platform
+    env:
+      PLAN_FILENAME: "${{ github.sha }}.tfplan"
+      PLAN_BUCKET: ${{ vars.TFSTATE_BUCKET }}
+      ARTIFACT_PREFIX: "${{ vars.ARTIFACT_PREFIX }}"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Authenticate with GCP for artifact retrieval
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: "${{ vars.GCLOUD_PROJECT }}"
+          workload_identity_provider: "${{ vars.GCLOUD_PROVIDER }}"
+          service_account: "${{ vars.ARTIFACT_SA }}"
+
+      - name: Download plan
+        run: gcloud storage cp "gs://${PLAN_BUCKET}/${ARTIFACT_PREFIX}cd/platform/${PLAN_FILENAME}" "${PLAN_FILENAME}"
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v2
+        with:
+          tofu_version: ${{ env.tofu-version }}
+
+      - name: Authenticate with GCP for deployment
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: "${{ vars.GCLOUD_PROJECT }}"
+          workload_identity_provider: "${{ vars.GCLOUD_PROVIDER }}"
+          service_account: "${{ vars.APPLY_SA }}"
+
+      - name: Initialize stack online
+        run: tofu init
+
+      - name: Execute the plan file
+        run: tofu apply -input=false "${PLAN_FILENAME}"

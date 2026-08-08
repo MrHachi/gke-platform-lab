@@ -134,17 +134,11 @@ jobs:
         run: |
           echo '# network stack plan' > comment.md
           echo '```text' >> comment.md
-          set +e
-          tofu plan -no-color -detailed-exitcode -lock=false -out=tfplan >> comment.md
-          status=$?
-          set -e
+          tofu plan -no-color -lock=false -out=tfplan >> comment.md
           echo '```' >> comment.md
 
-          if [ $status -eq 1 ]; then
-            exit 1
-          fi
-
-          if [ $status -eq 2 ]; then
+          tofu show -json -plan=tfplan > tfplan.json
+          if jq -e 'any(.resource_changes[]?.change.actions[]?; . != "no-op")' tfplan.json >/dev/null; then
             echo "# WARNING" >> comment.md
             echo "Changes detected for network stack." >> comment.md
             echo "Be sure to deploy network stack manually before merging." >> comment.md
@@ -152,12 +146,9 @@ jobs:
 
       - name: Post plan to PR
         continue-on-error: true
-        uses: .github/actions/comment-on-pr
+        uses: ./.github/actions/comment-on-pr
         with:
           input-file: infrastructure/stacks/core/network/comment.md
-
-      - name: Convert plan to JSON
-        run: tofu show -json -plan=tfplan > tfplan.json
 
       - name: Checkov security scan
         uses: bridgecrewio/checkov-action@v12
@@ -167,8 +158,9 @@ jobs:
           output_format: github_failed_only
 
       - name: Post scan results to PR
+        if: failure()
         continue-on-error: true
-        uses: .github/actions/comment-on-pr
+        uses: ./.github/actions/comment-on-pr
         with:
           input-file: infrastructure/stacks/core/network/checkov.md
 
@@ -210,14 +202,13 @@ jobs:
           tofu plan -no-color -lock=false -out=tfplan >> comment.md
           echo '```' >> comment.md
 
+          tofu show -json -plan=tfplan > tfplan.json
+
       - name: Post plan to PR
         continue-on-error: true
-        uses: .github/actions/comment-on-pr
+        uses: ./.github/actions/comment-on-pr
         with:
           input-file: infrastructure/stacks/core/platform/comment.md
-
-      - name: Convert plan to JSON
-        run: tofu show -json -plan=tfplan > tfplan.json
 
       - name: Checkov GitHub Action
         uses: bridgecrewio/checkov-action@v12
@@ -228,7 +219,8 @@ jobs:
           output_file_path: infrastructure/stacks/core/platform/checkov.md
 
       - name: Post scan results to PR
+        if: failure()
         continue-on-error: true
-        uses: .github/actions/comment-on-pr
+        uses: ./.github/actions/comment-on-pr
         with:
           input-file: infrastructure/stacks/core/platform/checkov.md

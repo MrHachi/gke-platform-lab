@@ -135,8 +135,9 @@ jobs:
           echo '# network stack plan' > comment.md
           echo '```text' >> comment.md
           set +e
-          tofu plan -detailed-exitcode -lock=false -out=tfplan | tee -a comment.md
-          status=$?
+          tofu plan -no-color -detailed-exitcode -lock=false -out=tfplan | tee -a comment.md
+          status=${PIPESTATUS[0]}
+          set -e
           echo '```' >> comment.md
 
           if [ $status -eq 1 ]; then
@@ -209,7 +210,7 @@ jobs:
         run: |
           echo '# platform stack plan' > comment.md
           echo '```text' >> comment.md
-          tofu plan -lock=false -out=tfplan | tee -a comment.md
+          tofu plan -no-color -lock=false -out=tfplan | tee -a comment.md
           echo '```' >> comment.md
 
       - name: Comment on PR

@@ -8,6 +8,10 @@ on:
       - .github/workflows/core-tf-*
       - infrastructure/*/core/**
 
+concurrency:
+  group: core-tf-cd
+  cancel-in-progress: false
+
 env:
   tofu-version: 1.12.0
 

@@ -5,6 +5,10 @@ on:
     tags:
       - core-v**
 
+concurrency:
+  group: core-tf-cd
+  cancel-in-progress: false
+
 env:
   tofu-version: 1.12.0
 

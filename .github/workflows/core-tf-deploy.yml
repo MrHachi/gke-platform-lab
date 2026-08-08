@@ -56,4 +56,4 @@ jobs:
         run: tofu init
 
       - name: Execute the plan file
-        run: tofu apply -input=false "${PLAN_FILENAME}"
+        run: tofu apply -auto-approve -input=false "${PLAN_FILENAME}"

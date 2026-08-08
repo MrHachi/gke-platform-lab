@@ -34,7 +34,7 @@ jobs:
         with:
           tofu_version: ${{ env.tofu-version }}
 
-      - name: Authenticate with GCP
+      - name: Authenticate with GCP for plan generation
         uses: google-github-actions/auth@v3
         with:
           project_id: "${{ vars.GCLOUD_PROJECT }}"
@@ -46,6 +46,13 @@ jobs:
 
       - name: Create plan file
         run: tofu plan -out="${PLAN_FILENAME}"
+
+      - name: Authenticate with GCP for artifact storage
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: "${{ vars.GCLOUD_PROJECT }}"
+          workload_identity_provider: "${{ vars.GCLOUD_PROVIDER }}"
+          service_account: "${{ vars.ARTIFACT_SA }}"
 
       - name: Upload plan
         run: gcloud storage cp "${PLAN_FILENAME}" "gs://${PLAN_BUCKET}/${ARTIFACT_PREFIX}cd/platform/${PLAN_FILENAME}"

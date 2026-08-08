@@ -26,7 +26,7 @@ artifact_sa="${artifact_account_name}@${project_id}.iam.gserviceaccount.com"
 
 bucket="${project_id}-tfstate"
 core_state_prefix="state/core/"
-artifact_prefix="artifacts/core/"
+core_artifact_prefix="artifacts/core/"
 
 
 gcloud auth login
@@ -150,7 +150,7 @@ ensure_state_bucket_permissions() {
     gcloud storage buckets add-iam-policy-binding "gs://${project_id}-tfstate" \
         --member="serviceAccount:${artifact_sa}" \
         --role="roles/storage.objectUser" \
-        --condition="title=Artifact prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${artifact_prefix}')"
+        --condition="title=Artifact prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_artifact_prefix}')"
 }
 
 ensure_iac_permissions() {
@@ -202,3 +202,4 @@ echo
 echo "terraform-backend:"
 echo "  bucket: \"${bucket}\""
 echo "  state-prefix: \"${core_state_prefix}\""
+echo "  artifact-prefix: \"${core_artifact_prefix}\""

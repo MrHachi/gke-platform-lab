@@ -11,7 +11,7 @@ on:
       - synchronize
     paths:
       - .github/workflows/core-tf-*
-      - infrastructure/stacks/core/**
+      - infrastructure/stacks/**
 
 concurrency:
   group: core-tf-ci/${{ github.head_ref }}
@@ -19,7 +19,7 @@ concurrency:
 
 env:
   TOFU_VERSION: 1.12.0
-  STACK_DIR: infrastructure/stacks/core
+  STACK_DIR: infrastructure/stacks
 
 jobs:
   validate:

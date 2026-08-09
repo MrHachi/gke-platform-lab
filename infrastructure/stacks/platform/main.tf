@@ -15,7 +15,7 @@ locals {
 
 module "zonal_gke" {
   # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/core/platform/zonal-gke?ref=main"
+  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/zonal-gke?ref=main"
 
   stack = local.stack
 
@@ -29,7 +29,7 @@ module "zonal_gke" {
 
 module "gke_nodepool" {
   # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/core/platform/gke-nodepool?ref=main"
+  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/gke-nodepool?ref=main"
 
   stack = local.stack
 

@@ -11,14 +11,15 @@ on:
       - synchronize
     paths:
       - .github/workflows/core-tf-*
-      - infrastructure/*/core/**
+      - infrastructure/stacks/core/**
 
 concurrency:
   group: core-tf-ci/${{ github.head_ref }}
   cancel-in-progress: true
 
 env:
-  tofu-version: 1.12.0
+  TOFU_VERSION: 1.12.0
+  STACK_DIR: infrastructure/stacks/core
 
 jobs:
   validate:
@@ -26,12 +27,12 @@ jobs:
     strategy:
       matrix:
         stack:
-          - infrastructure/stacks/core/network
-          - infrastructure/stacks/core/platform
+          - network
+          - platform
       fail-fast: false
     defaults:
       run:
-        working-directory: ${{ matrix.stack }}
+        working-directory: ${{ env.STACK_DIR }}/${{ matrix.stack }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -40,7 +41,7 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Initialize stack offline
         run: tofu init -backend=false
@@ -50,15 +51,9 @@ jobs:
 
   fmt:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory:
-          - infrastructure/stacks/core
-          - infrastructure/modules/core
-      fail-fast: false
     defaults:
       run:
-        working-directory: ${{ matrix.directory }}
+        working-directory: ${{ env.STACK_DIR }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -67,22 +62,16 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Format check
         run: tofu fmt -recursive -check -diff
 
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory:
-          - infrastructure/stacks/core
-          - infrastructure/modules/core
-      fail-fast: false
     defaults:
       run:
-        working-directory: ${{ matrix.directory }}
+        working-directory: ${{ env.STACK_DIR }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -109,7 +98,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: infrastructure/stacks/core/network
+        working-directory: ${{ env.STACK_DIR }}/network
     steps:
       - uses: actions/checkout@v7
         with:
@@ -118,7 +107,7 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Authenticate with GCP
         uses: google-github-actions/auth@v3
@@ -148,22 +137,22 @@ jobs:
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/network/comment.md
+          input-file: ${{ env.STACK_DIR }}/network/comment.md
 
       - name: Checkov security scan
         uses: bridgecrewio/checkov-action@v12
         with:
-          file: infrastructure/stacks/core/network/tfplan.json
-          config_file: infrastructure/stacks/core/network/.checkov.yml
+          file: ${{ env.STACK_DIR }}/network/tfplan.json
+          config_file: ${{ env.STACK_DIR }}/network/.checkov.yml
           output_format: github_failed_only
-          output_file_path: infrastructure/stacks/core/network/scan
+          output_file_path: ${{ env.STACK_DIR }}/network/scan
 
       - name: Post scan results to PR
         if: failure()
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/network/scan/results_github_failed_only.md # discovered with ls
+          input-file: ${{ env.STACK_DIR }}/network/scan/results_github_failed_only.md # discovered with ls
 
   plan-platform:
     runs-on: ubuntu-latest
@@ -175,7 +164,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: infrastructure/stacks/core/platform
+        working-directory: ${{ env.STACK_DIR }}/platform
     steps:
       - uses: actions/checkout@v7
         with:
@@ -184,7 +173,7 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Authenticate with GCP
         uses: google-github-actions/auth@v3
@@ -209,19 +198,19 @@ jobs:
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/platform/comment.md
+          input-file: ${{ env.STACK_DIR }}/platform/comment.md
 
       - name: Checkov GitHub Action
         uses: bridgecrewio/checkov-action@v12
         with:
-          file: infrastructure/stacks/core/platform/tfplan.json
-          config_file: infrastructure/stacks/core/platform/.checkov.yml
+          file: ${{ env.STACK_DIR }}/platform/tfplan.json
+          config_file: ${{ env.STACK_DIR }}/platform/.checkov.yml
           output_format: github_failed_only
-          output_file_path: infrastructure/stacks/core/platform/scan
+          output_file_path: ${{ env.STACK_DIR }}/platform/scan
 
       - name: Post scan results to PR
         if: failure()
         continue-on-error: true
         uses: ./.github/actions/comment-on-pr
         with:
-          input-file: infrastructure/stacks/core/platform/scan/results_github_failed_only.md
+          input-file: ${{ env.STACK_DIR }}/platform/scan/results_github_failed_only.md

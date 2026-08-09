@@ -6,14 +6,15 @@ on:
       - main
     paths:
       - .github/workflows/core-tf-*
-      - infrastructure/*/core/**
+      - infrastructure/stacks/core/**
 
 concurrency:
   group: core-tf-cd
   cancel-in-progress: false
 
 env:
-  tofu-version: 1.12.0
+  TOFU_VERSION: 1.12.0
+  STACK_DIR: ${{ env.STACK_DIR }}
 
 jobs:
   save-platform-plan:
@@ -23,7 +24,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: infrastructure/stacks/core/platform
+        working-directory: ${{ env.STACK_DIR }}/platform
     env:
       PLAN_FILENAME: "${{ github.sha }}.tfplan"
       PLAN_BUCKET: ${{ vars.TFSTATE_BUCKET }}
@@ -36,7 +37,7 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Authenticate with GCP for plan generation
         uses: google-github-actions/auth@v3

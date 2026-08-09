@@ -3,14 +3,15 @@ name: Core TF Deploy
 on:
   push:
     tags:
-      - core-v**
+      - platform/v**
 
 concurrency:
   group: core-tf-cd
   cancel-in-progress: false
 
 env:
-  tofu-version: 1.12.0
+  TOFU_VERSION: 1.12.0
+  STACKS_DIR: infrastructure/stacks/core
 
 jobs:
   execute-platform-plan:
@@ -20,7 +21,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: infrastructure/stacks/core/platform
+        working-directory: ${{ env.STACK_DIR }}/platform
     env:
       PLAN_FILENAME: "${{ github.sha }}.tfplan"
       PLAN_BUCKET: ${{ vars.TFSTATE_BUCKET }}
@@ -43,7 +44,7 @@ jobs:
       - name: Set up OpenTofu
         uses: opentofu/setup-opentofu@v2
         with:
-          tofu_version: ${{ env.tofu-version }}
+          tofu_version: ${{ env.TOFU_VERSION }}
 
       - name: Authenticate with GCP for deployment
         uses: google-github-actions/auth@v3

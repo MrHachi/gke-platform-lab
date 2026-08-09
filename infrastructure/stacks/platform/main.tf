@@ -19,6 +19,8 @@ module "zonal_gke" {
 
   stack = local.stack
 
+  gke_release_channel = "REGULAR"
+
   zone        = local.zone
   vpc_name    = local.network.vpc_name
   subnet_name = local.network.gke_subnet_name
@@ -32,6 +34,8 @@ module "gke_nodepool" {
   source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/gke-nodepool?ref=main"
 
   stack = local.stack
+
+  gke_release_channel = "REGULAR"
 
   name         = "primary"
   cluster_name = module.zonal_gke.cluster_name

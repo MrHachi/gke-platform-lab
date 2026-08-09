@@ -1,1 +1,9 @@
-skip-check: []
+skip-check:
+  # Private cluster/nodes:
+  # NAT is out of scope for this lab project-clusters and nodes
+  # will instead be protected with firewalls
+  - CKV_GCP_25
+  - CKV_GCP_64
+  # Master authorized networks:s
+  # I lack a stable public IP and this is a lab project
+  - CKV_GCP_20

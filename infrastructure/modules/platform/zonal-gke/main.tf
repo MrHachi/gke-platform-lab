@@ -8,6 +8,8 @@ locals {
   cluster_name = "${var.stack}-gke"
 }
 
+data "google_project" "current" {}
+
 resource "google_container_cluster" "main" {
   name = local.cluster_name
 
@@ -52,6 +54,10 @@ resource "google_container_cluster" "main" {
   # networking_mode = "VPC_NATIVE" (default)
 
   # enable_shielded_nodes = true (default)
+
+  workload_identity_config {
+    workload_pool = "${data.google_project.current.project_id}.svc.id.goog"
+  }
 
   resource_labels = {
     stack  = var.stack

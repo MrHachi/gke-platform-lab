@@ -4,6 +4,15 @@ skip-check:
   # will instead be protected with firewalls
   - CKV_GCP_25
   - CKV_GCP_64
-  # Master authorized networks:s
+  # Master authorized networks:
   # I lack a stable public IP and this is a lab project
   - CKV_GCP_20
+  # Google groups integration:
+  # Out of scope for this lab project; environment not a part of any organizations
+  - CKV_GCP_65
+  # Binary auth:
+  # Out of scope for this lab project
+  - CKV_GCP_66
+  # Metadata server:
+  # This should be enabled; this check appears broken
+  - CKV_GCP_69

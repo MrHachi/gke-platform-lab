@@ -93,6 +93,9 @@ jobs:
       - validate
       - fmt
       - lint
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       matrix:
         stack:

@@ -15,9 +15,11 @@ locals {
 
 module "zonal_gke" {
   # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/core/platform/zonal-gke?ref=main"
+  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/zonal-gke?ref=main"
 
   stack = local.stack
+
+  gke_release_channel = "REGULAR"
 
   zone        = local.zone
   vpc_name    = local.network.vpc_name
@@ -29,9 +31,11 @@ module "zonal_gke" {
 
 module "gke_nodepool" {
   # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/core/platform/gke-nodepool?ref=main"
+  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/gke-nodepool?ref=main"
 
   stack = local.stack
+
+  gke_release_channel = "REGULAR"
 
   name         = "primary"
   cluster_name = module.zonal_gke.cluster_name

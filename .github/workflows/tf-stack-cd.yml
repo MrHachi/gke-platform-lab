@@ -1,0 +1,63 @@
+name: TF Stack CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/tf-stack-*
+      - infrastructure/stacks/**
+
+concurrency:
+  group: tf-stack-cd
+  cancel-in-progress: false
+
+env:
+  TOFU_VERSION: 1.12.0
+  STACK_DIR: infrastructure/stacks
+
+jobs:
+  save-platform-plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: ${{ env.STACK_DIR }}/platform
+    env:
+      PLAN_FILENAME: "${{ github.sha }}.tfplan"
+      PLAN_BUCKET: ${{ vars.TFSTATE_BUCKET }}
+      ARTIFACT_PREFIX: "${{ vars.ARTIFACT_PREFIX }}"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Authenticate with GCP for plan generation
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: "${{ vars.GCLOUD_PROJECT }}"
+          workload_identity_provider: "${{ vars.GCLOUD_PROVIDER }}"
+          service_account: "${{ vars.PLAN_SA }}"
+
+      - name: Initialize stack online
+        run: tofu init
+
+      - name: Create plan file
+        run: tofu plan -out="${PLAN_FILENAME}"
+
+      - name: Authenticate with GCP for artifact storage
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: "${{ vars.GCLOUD_PROJECT }}"
+          workload_identity_provider: "${{ vars.GCLOUD_PROVIDER }}"
+          service_account: "${{ vars.ARTIFACT_SA }}"
+
+      - name: Upload plan
+        run: gcloud storage cp "${PLAN_FILENAME}" "gs://${PLAN_BUCKET}/${ARTIFACT_PREFIX}cd/platform/${PLAN_FILENAME}"

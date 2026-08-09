@@ -4,11 +4,11 @@ Infrastructure changes are promoted through an immutable plan artifact.
 Upon push to `main`, an immutable plan artifact is uploaded to GCS during CD, and is downloaded and executed during deployment on tag push.
 (This is to reduce drift betweeen plan approval and application)
 
-To avoid executing CI/CD unnecessarily, we conditionally execute on the `infrastructure/*/core/**` paths.
+To avoid executing CI/CD unnecessarily, we conditionally execute on the `infrastructure/stack/**` path for CI and on `infrastructure/stack/platform` path for CD.
 
 ## Workflow
 
-### core-tf-ci
+### tf-stack-ci
 
 ```mermaid
 flowchart LR
@@ -34,7 +34,7 @@ flowchart LR
 > `tofu plan` operations in CI intentionally do not use state locking, as GitHub Actions concurrency
 > can cancel workflows before they release state and `plan` operations are largely read-only anyway
 
-### core-tf-cd
+### tf-stack-cd
 
 ```mermaid
 flowchart LR
@@ -53,14 +53,14 @@ flowchart LR
 
 > Plan file is named with the hash of the commit that triggered the workflow when uploaded to GCS
 
-> This workflow shares a concurrency group with [core-tf-deploy](#core-tf-deploy) and cannot cancel
+> This workflow shares a concurrency group with [tf-stack-deploy](#tf-stack-deploy) and cannot cancel
 > in-progress executions
 
-### core-tf-deploy
+### tf-stack-deploy
 
 ```mermaid
 flowchart LR
-    A{Tag push:<br>core-v*}
+    A{Tag push:<br>platform/v*}
 
     subgraph B [Deploy]
         direction LR
@@ -78,5 +78,5 @@ flowchart LR
 
 > Pushing a commit that points at a previously executed plan will fail due to a stale plan
 
-> This workflow shares a concurrency group with [core-tf-cd](#core-tf-cd) and cannot cancel
+> This workflow shares a concurrency group with [tf-stack-cd](#tf-stack-cd) and cannot cancel
 > in-progress executions

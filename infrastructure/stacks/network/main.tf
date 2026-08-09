@@ -10,7 +10,7 @@ locals {
 
 module "vpc" {
   # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/core/network/vpc?ref=main"
+  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/network/vpc?ref=main"
 
   stack = local.stack
 

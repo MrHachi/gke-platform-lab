@@ -1,0 +1,87 @@
+name: TF Module CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+    paths:
+      - .github/workflows/tf-module-*
+      - infrastructure/modules/**
+
+concurrency:
+  group: tf-module-ci/${{ github.head_ref }}
+  cancel-in-progress: true
+
+env:
+  TOFU_VERSION: 1.12.0
+  MODULE_DIR: infrastructure/modules
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stack:
+          - network
+          - platform
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: ${{ env.MODULE_DIR }}/${{ matrix.stack }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Initialize stack offline
+        run: tofu init -backend=false
+
+      - name: Validate
+        run: tofu validate
+
+  fmt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.MODULE_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Format check
+        run: tofu fmt -recursive -check -diff
+
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.MODULE_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Use latest version of tflint
+      - name: Set up tflint
+        uses: terraform-linters/setup-tflint@v6
+
+      - name: Lint
+        run: |
+          tflint --init
+          tflint -f compact

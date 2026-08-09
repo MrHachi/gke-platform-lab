@@ -1,4 +1,4 @@
-name: Core TF Deploy
+name: TF Stack Deploy
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - platform/v**
 
 concurrency:
-  group: core-tf-cd
+  group: tf-stack-cd
   cancel-in-progress: false
 
 env:

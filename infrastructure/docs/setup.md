@@ -33,10 +33,10 @@ Run the idempotent environment bootstrapping script:
 
 ## GitHub
 
-- [CI](./cicd.md#core-tf-ci): PR to main
-- [CD](./cicd.md#core-tf-cd): PR is merged (or on any push to main)
+- [CI](./cicd.md#tf-stack-ci): PR to main
+- [CD](./cicd.md#tf-stack-cd): PR is merged (or on any push to main)
     - saves a tfplan file to GCS for later execution
-- [Deployment](./cicd.md#core-tf-deploy): tag push (pattern: `core-v*`)
+- [Deployment](./cicd.md#tf-stack-deploy): tag push (pattern: `platform/v*`)
     - the plan saved above in CD is executed
 
 ### Procedure
@@ -63,6 +63,6 @@ Set the following repository variables for GitHub Actions:
 # Setup verification
 
 1. Cut a branch from main
-2. Modify any of the files under `infrastructure/stacks/core` or `infrastructure/modules/core`
+2. Modify any of the files under `infrastructure/stacks`
 3. Open a PR to main
-4. Verify that the `core-tf-ci` workflow runs and that plan results are commented on the PR
+4. Verify that the `tf-stack-ci` workflow runs and that plan results are commented on the PR

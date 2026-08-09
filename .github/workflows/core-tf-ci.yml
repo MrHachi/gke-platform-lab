@@ -1,4 +1,4 @@
-name: Core TF CI
+name: TF Stack CI
 
 on:
   pull_request:
@@ -10,11 +10,11 @@ on:
       - edited
       - synchronize
     paths:
-      - .github/workflows/core-tf-*
+      - .github/workflows/tf-stack-*
       - infrastructure/stacks/**
 
 concurrency:
-  group: core-tf-ci/${{ github.head_ref }}
+  group: tf-stack-ci/${{ github.head_ref }}
   cancel-in-progress: true
 
 env:

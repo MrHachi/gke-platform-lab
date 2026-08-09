@@ -1,15 +1,15 @@
-name: Core TF CD
+name: TF Stack CD
 
 on:
   push:
     branches:
       - main
     paths:
-      - .github/workflows/core-tf-*
-      - infrastructure/stacks/core/**
+      - .github/workflows/tf-stack-*
+      - infrastructure/stacks/**
 
 concurrency:
-  group: core-tf-cd
+  group: tf-stack-cd
   cancel-in-progress: false
 
 env:

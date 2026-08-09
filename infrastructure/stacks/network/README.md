@@ -1,4 +1,4 @@
-# core: network
+# Stack: network
 
 ![network stack architecture diagram](/infrastructure/docs/diagrams/network.drawio.svg)
 

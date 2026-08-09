@@ -8,5 +8,5 @@ Manage the foundational infrastructure, including GKE and LoadBalancers, for the
 
 ## Destructive changes
 
-- [network](/infrastructure/stacks/core/network) stack changes changes may affect these resources catastrophically
+- [network](/infrastructure/stacks/network) stack changes changes may affect these resources catastrophically
 - Zone/region changes will result in GKE resources being recreated

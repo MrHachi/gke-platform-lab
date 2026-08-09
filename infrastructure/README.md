@@ -6,19 +6,13 @@ Contains the OpenTofu / Terraform modules and stacks required to deploy a small 
 
 infrastructure/
   │
-  ├─ stacks/
-  │    ├─ core/   <- stacks required for GKE
-  │    └─ apps/   <- stacks for application cloud infrastructure
+  ├─ stacks/    <- stack code
   │
-  ├─ modules/
-  │    ├─ core/   <- modules consumed by core stacks
-  │    └─ apps/   <- modules consumed by application stacks
+  ├─ modules/   <- modules consumed by the above
   │
-  └─ scripts/     <- one-off scripts for bootstrapping environment for OpenTofu
+  └─ scripts/   <- one-off scripts for bootstrapping environment for OpenTofu
 
 ```
-
-> `core` IaC defines the foundational infrastructure on which `apps` run.
 
 ## Constraints
 
@@ -28,12 +22,12 @@ infrastructure/
     - The subnet may also need to be recreated depending on the change.
 - Network state is intentionally long-lived and **not** managed by CI/CD (applied manually)
     - This is to reduce the blast radius of accidental CI/CD changes
-- Apply order: core(network → platform) → apps(...)
-- Destroy order: apps(...) → core(platform → network)
+- Apply order: network → platform
+- Destroy order: platform → network
 - The repo structure and remote-state references are the authoritative dependency graph
 - Stacks consume dependency stack outputs exclusively through `terraform_remote_state`; direct references between stacks are not permitted
 
 ## `core` stacks
 
-- [network](/infrastructure/stacks/core/network)
-- [platform](/infrastructure/stacks/core/platform)
+- [network](/infrastructure/stacks/network)
+- [platform](/infrastructure/stacks/platform)

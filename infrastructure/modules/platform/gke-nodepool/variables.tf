@@ -37,3 +37,13 @@ variable "node_count" {
     error_message = "Specify an integer node count greater than 0"
   }
 }
+
+variable "gke_release_channel" {
+  type        = string
+  description = "GKE release channel to use"
+
+  validation {
+    condition     = contains(local.gke_release_channels, var.gke_release_channel)
+    error_message = "Use a value from: ${local.gke_release_channels}"
+  }
+}

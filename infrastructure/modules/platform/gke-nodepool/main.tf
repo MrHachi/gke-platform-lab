@@ -1,5 +1,11 @@
 locals {
   module = "gke-nodepool"
+
+  gke_release_channels = [
+    "RAPID", "REGULAR", "STABLE", "EXTENDED"
+  ]
+
+  nodepool_name = "${var.cluster_name}-${var.name}"
 }
 
 data "google_container_engine_versions" "gke_version" {
@@ -7,20 +13,30 @@ data "google_container_engine_versions" "gke_version" {
 }
 
 resource "google_container_node_pool" "primary_nodes" {
-  name = "${var.cluster_name}-${var.name}"
+  name = local.nodepool_name
 
   cluster    = var.cluster_name
   location   = var.location
   node_count = var.node_count
 
   # This is a lab, so we don't necessarily need STABLE releases (use REGULAR)
-  version = data.google_container_engine_versions.gke_version.release_channel_default_version["REGULAR"]
+  version = data.google_container_engine_versions.gke_version.release_channel_default_version[var.gke_release_channel]
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
 
   node_config {
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
+
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
 
     # preemptible  = true
     machine_type = "n1-standard-1"
@@ -29,8 +45,15 @@ resource "google_container_node_pool" "primary_nodes" {
       disable-legacy-endpoints = "true"
     }
 
+    # GKE metadata server / Workload Identity
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
+
     labels = {
-      path = "${var.stack}/${local.module}/${var.cluster_name}"
+      stack  = var.stack
+      module = local.module
+      path   = "${var.stack}/${local.module}/${var.cluster_name}/${local.nodepool_name}"
     }
   }
 }

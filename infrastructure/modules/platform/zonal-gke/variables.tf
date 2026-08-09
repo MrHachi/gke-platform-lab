@@ -27,3 +27,13 @@ variable "services_range_name" {
   type        = string
   description = "Secondary subnet range name for GKE services"
 }
+
+variable "gke_release_channel" {
+  type        = string
+  description = "GKE release channel to use"
+
+  validation {
+    condition     = contains(local.gke_release_channels, var.gke_release_channel)
+    error_message = "Use a value from: ${local.gke_release_channels}"
+  }
+}

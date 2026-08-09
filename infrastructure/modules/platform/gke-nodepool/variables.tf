@@ -44,6 +44,6 @@ variable "gke_release_channel" {
 
   validation {
     condition     = contains(local.gke_release_channels, var.gke_release_channel)
-    error_message = "Use a value from: ${local.gke_release_channels}"
+    error_message = "Use a value from: ${join(",", local.gke_release_channels)}"
   }
 }

@@ -62,6 +62,5 @@ resource "google_container_cluster" "main" {
   resource_labels = {
     stack  = var.stack
     module = local.module
-    path   = "${var.stack}-${local.module}-${local.cluster_name}"
   }
 }

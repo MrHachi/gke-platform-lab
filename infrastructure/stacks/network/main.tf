@@ -8,7 +8,7 @@ locals {
   gke_subnet_services_range_name = "services"
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/network"
-  modules_version = "module/network/v0.0.1"
+  modules_version = "module/network/v0.0.2"
 }
 
 module "vpc" {

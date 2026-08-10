@@ -11,11 +11,13 @@ locals {
   }
 
   gke_version_prefix = "1.36."
-  modules_version    = "module/platform/v0.0.2"
+
+  modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
+  modules_version = "module/platform/v0.0.2"
 }
 
 module "zonal_gke" {
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/zonal-gke?ref=${local.modules_version}"
+  source = "${local.modules_path}/zonal-gke?ref=${local.modules_version}"
 
   stack = local.stack
 
@@ -30,7 +32,7 @@ module "zonal_gke" {
 }
 
 module "gke_nodepool" {
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform/gke-nodepool?ref=${local.modules_version}"
+  source = "${local.modules_path}/gke-nodepool?ref=${local.modules_version}"
 
   stack = local.stack
 

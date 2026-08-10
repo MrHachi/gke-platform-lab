@@ -3,7 +3,7 @@ locals {
   region = "us-south1"
   zone   = "${local.region}-a" # only used for provider configuration presently
 
-  gke_subnet_name                = "gke"
+  gke_subnet_id                  = "gke"
   gke_subnet_pods_range_name     = "pods"
   gke_subnet_services_range_name = "services"
 
@@ -17,7 +17,7 @@ module "vpc" {
   stack = local.stack
 
   subnet_config = {
-    (local.gke_subnet_name) = {
+    (local.gke_subnet_id) = {
       region = local.region
       main   = "10.16.0.0/16"
       secondary = {

@@ -52,7 +52,7 @@ resource "google_container_node_pool" "primary_nodes" {
     labels = {
       stack  = var.stack
       module = local.module
-      path   = "${var.stack}/${local.module}/${var.cluster_name}/${local.nodepool_name}"
+      path   = "${var.stack}-${local.module}-${var.cluster_name}-${local.nodepool_name}"
     }
   }
 }

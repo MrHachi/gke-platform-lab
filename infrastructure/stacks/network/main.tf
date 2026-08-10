@@ -6,11 +6,13 @@ locals {
   gke_subnet_name                = "gke"
   gke_subnet_pods_range_name     = "pods"
   gke_subnet_services_range_name = "services"
+
+  modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/network"
+  modules_version = "module/network/v0.0.1"
 }
 
 module "vpc" {
-  # TODO: pin to tag
-  source = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/network/vpc?ref=main"
+  source = "${local.modules_path}/vpc?ref=${local.modules_version}"
 
   stack = local.stack
 

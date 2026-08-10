@@ -11,7 +11,7 @@ concurrency:
 
 env:
   TOFU_VERSION: 1.12.0
-  STACKS_DIR: infrastructure/stacks
+  STACK_DIR: infrastructure/stacks
 
 jobs:
   execute-platform-plan:

@@ -16,7 +16,8 @@ repo_name="${REPO_NAME}"
 WORKLOAD_IDENTITY_POOL_NAME="github-actions-pool"
 PROVIDER_NAME="github-actions-id-provider"
 SERVICE_ACCOUNT_NAME_BASE="github-actions"
-TFSTATE_INIT_ROLE_NAME="tfstateInitializer"
+FILE_CREATOR_ROLE_NAME="fileCreator"
+BUCKET_LISTER_ROLE_NAME="bucketLister"
 
 plan_account_name="${SERVICE_ACCOUNT_NAME_BASE}-plan"
 apply_account_name="${SERVICE_ACCOUNT_NAME_BASE}-apply"
@@ -135,14 +136,27 @@ ensure_state_bucket() {
 ensure_state_bucket_permissions() {
     echo "Ensure state bucket permissions"
 
-    echo "${TFSTATE_INIT_ROLE_NAME}"
-    if ! gcloud iam roles describe "${TFSTATE_INIT_ROLE_NAME}" \
+    echo "${FILE_CREATOR_ROLE_NAME}"
+    gcloud iam roles describe ${FILE_CREATOR_ROLE_NAME} \
+        --project=${project_id} \
+        --format="value(deleted)"
+    if ! gcloud iam roles describe "${FILE_CREATOR_ROLE_NAME}" \
         --project="${project_id}" >/dev/null 2>&1; then
-        gcloud iam roles create "${TFSTATE_INIT_ROLE_NAME}" \
+        gcloud iam roles create "${FILE_CREATOR_ROLE_NAME}" \
             --project="${project_id}" \
-            --title="State Initializer" \
-            --description="Allows a SA to create state objects during TF initialization" \
+            --title="Object Creator" \
+            --description="Allows a SA to create objects in a storage bucket" \
             --permissions="storage.objects.create"
+    fi
+
+    echo "${BUCKET_LISTER_ROLE_NAME}"
+    if ! gcloud iam roles describe "${BUCKET_LISTER_ROLE_NAME}" \
+        --project="${project_id}" >/dev/null 2>&1; then
+        gcloud iam roles create "${BUCKET_LISTER_ROLE_NAME}" \
+            --project="${project_id}" \
+            --title="Bucket Lister" \
+            --description="Allows a SA to list objects in a bucket" \
+            --permissions="storage.objects.list"
     fi
 
     echo "${plan_sa}"
@@ -156,7 +170,7 @@ ensure_state_bucket_permissions() {
         --condition="title=State lock access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}') && resource.name.endsWith('.tflock')"
     gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
         --member="serviceAccount:${plan_sa}" \
-        --role="projects/${project_id}/roles/${TFSTATE_INIT_ROLE_NAME}" \
+        --role="projects/${project_id}/roles/${FILE_CREATOR_ROLE_NAME}" \
         --condition="title=State initialization,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_state_prefix}') && resource.name.endsWith('.tfstate')"
 
     echo "${apply_sa}"
@@ -170,6 +184,10 @@ ensure_state_bucket_permissions() {
         --member="serviceAccount:${artifact_sa}" \
         --role="roles/storage.objectUser" \
         --condition="title=Artifact prefix access,expression=resource.name.startsWith('projects/_/buckets/${bucket}/objects/${core_artifact_prefix}')"
+    gcloud storage buckets add-iam-policy-binding "gs://${bucket}" \
+        --member="serviceAccount:${artifact_sa}" \
+        --role="projects/${project_id}/roles/${BUCKET_LISTER_ROLE_NAME}" \
+        --condition=None
 }
 
 ensure_iac_permissions() {

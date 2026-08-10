@@ -3,12 +3,12 @@ locals {
   region = "us-south1"
   zone   = "${local.region}-a" # only used for provider configuration presently
 
-  gke_subnet_name                = "gke"
+  gke_subnet_id                  = "gke"
   gke_subnet_pods_range_name     = "pods"
   gke_subnet_services_range_name = "services"
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/network"
-  modules_version = "module/network/v0.0.1"
+  modules_version = "module/network/v0.0.2"
 }
 
 module "vpc" {
@@ -17,7 +17,7 @@ module "vpc" {
   stack = local.stack
 
   subnet_config = {
-    (local.gke_subnet_name) = {
+    (local.gke_subnet_id) = {
       region = local.region
       main   = "10.16.0.0/16"
       secondary = {

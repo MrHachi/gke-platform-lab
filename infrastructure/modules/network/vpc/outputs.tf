@@ -5,8 +5,9 @@ output "vpc_name" {
 
 output "subnet_config" {
   value = {
-    for name, subnet in google_compute_subnetwork.subnet :
-    name => {
+    for id, subnet in google_compute_subnetwork.subnet :
+    id => {
+      name                = subnet.name
       region              = subnet.region
       main_cidr_ipv4      = subnet.ip_cidr_range
       secondary_cidr_ipv4 = var.subnet_config[name].secondary # not exposed via attributes-needs to be taken from vars

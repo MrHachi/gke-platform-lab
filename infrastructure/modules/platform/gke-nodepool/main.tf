@@ -39,7 +39,7 @@ resource "google_container_node_pool" "primary_nodes" {
     }
 
     # preemptible  = true
-    machine_type = "e2-small"
+    machine_type = var.machine_type
     tags         = ["gke-node", "${var.stack}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"

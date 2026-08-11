@@ -13,18 +13,31 @@ locals {
   gke_version_prefix = "1.36."
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
-  modules_version = "module/platform/v0.0.5"
+  modules_version = "module/platform/v0.1.0"
 
   nodepools = {
     "infra" = {
       machine_type = "e2-medium"
       nodes        = 1
       location     = local.zone
+
+      taints = [
+        { key = "workload", value = "infra", effect = "NO_SCHEDULE" }
+      ]
+      labels = {
+        workload = "infra"
+      }
     }
     "app" = {
       machine_type = "e2-small"
       nodes        = 2
       location     = local.zone
+
+      # Not tainted because it's not really a problem if infra workloads spill over into this pool
+      taints = []
+      labels = {
+        workload = "app"
+      }
     }
   }
 }
@@ -59,4 +72,7 @@ module "gke_nodepool" {
   location     = each.value.location
   machine_type = each.value.machine_type
   node_count   = each.value.nodes
+
+  taints            = each.value.taints
+  kubernetes_labels = each.value.labels
 }

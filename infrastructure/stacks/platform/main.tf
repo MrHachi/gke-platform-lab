@@ -13,7 +13,7 @@ locals {
   gke_version_prefix = "1.36."
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
-  modules_version = "module/platform/v0.0.4"
+  modules_version = "module/platform/v0.0.5"
 
   nodepools = {
     "infra" = {

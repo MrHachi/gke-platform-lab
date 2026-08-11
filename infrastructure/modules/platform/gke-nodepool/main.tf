@@ -49,7 +49,9 @@ resource "google_container_node_pool" "primary_nodes" {
       mode = "GKE_METADATA"
     }
 
-    labels = {
+
+
+    resource_labels = {
       stack   = var.stack
       module  = local.module
       cluster = var.cluster_name

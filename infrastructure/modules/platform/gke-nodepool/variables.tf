@@ -47,3 +47,8 @@ variable "gke_release_channel" {
     error_message = "Use a value from: ${join(",", local.gke_release_channels)}"
   }
 }
+
+variable "machine_type" {
+  type        = string
+  description = "Machine type to use for the nodes in this node pool"
+}

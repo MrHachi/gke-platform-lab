@@ -44,11 +44,34 @@ variable "gke_release_channel" {
 
   validation {
     condition     = contains(local.gke_release_channels, var.gke_release_channel)
-    error_message = "Use a value from: ${join(",", local.gke_release_channels)}"
+    error_message = "Use a value from: ${join(", ", local.gke_release_channels)}"
   }
 }
 
 variable "machine_type" {
   type        = string
   description = "Machine type to use for the nodes in this node pool"
+}
+
+variable "kubernetes_labels" {
+  type        = map(string)
+  default     = {}
+  description = "Map of key/value pairs used to set kubernetes labels on the nodes in this node pool"
+}
+
+variable "taints" {
+  type = list(object({
+    key    = string
+    value  = string
+    effect = string
+  }))
+  default     = []
+  description = "List of taint configurations to set on the nodes in this node pool"
+
+  validation {
+    condition = alltrue([
+      for taint in var.taints : contains(local.taint_effects, taint.effect)
+    ])
+    error_message = "Please specify one of the following values for taint effect: ${join(", ", local.taint_effects)}"
+  }
 }

@@ -4,6 +4,9 @@ locals {
   gke_release_channels = [
     "RAPID", "REGULAR", "STABLE", "EXTENDED"
   ]
+  taint_effects = [
+    "NO_SCHEDULE", "NO_EXECUTE", "PREFER_NO_SCHEDULE"
+  ]
 
   nodepool_name = "${var.cluster_name}-${var.name}"
 }
@@ -49,7 +52,16 @@ resource "google_container_node_pool" "primary_nodes" {
       mode = "GKE_METADATA"
     }
 
+    dynamic "taint" {
+      for_each = var.taints
+      content {
+        key    = taint.value.key
+        value  = taint.value.value
+        effect = taint.value.effect
+      }
+    }
 
+    labels = var.kubernetes_labels
 
     resource_labels = {
       stack   = var.stack

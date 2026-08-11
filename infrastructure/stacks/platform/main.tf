@@ -14,6 +14,19 @@ locals {
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
   modules_version = "module/platform/v0.0.4"
+
+  nodepools = {
+    "infra" = {
+      machine_type = "e2-medium"
+      nodes        = 1
+      location     = local.zone
+    }
+    "app" = {
+      machine_type = "e2-small"
+      nodes        = 2
+      location     = local.zone
+    }
+  }
 }
 
 module "zonal_gke" {
@@ -32,17 +45,18 @@ module "zonal_gke" {
 }
 
 module "gke_nodepool" {
-  source = "${local.modules_path}/gke-nodepool?ref=${local.modules_version}"
+  for_each = local.nodepools
+  source   = "${local.modules_path}/gke-nodepool?ref=${local.modules_version}"
 
-  stack = local.stack
+  cluster_name = module.zonal_gke.cluster_name
 
   gke_release_channel = "REGULAR"
 
-  name         = "primary"
-  cluster_name = module.zonal_gke.cluster_name
-
-  location           = local.zone
+  stack              = local.stack
   gke_version_prefix = local.gke_version_prefix
 
-  node_count = 1
+  name         = each.key
+  location     = each.value.location
+  machine_type = each.value.machine_type
+  node_count   = each.value.nodes
 }

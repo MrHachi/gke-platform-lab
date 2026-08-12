@@ -3,12 +3,19 @@
 ```mermaid
 flowchart LR
     subgraph A[infra]
-        subgraph AA[e2-medium]
+        subgraph AA[e2-small]
             AAA(CoreDNS)
             AAB(Argo CD)
             AAC(Loki)
             AAD(Ingress)
             AAE(Operators)
+        end
+        subgraph AB[e2-small]
+            ABA(CoreDNS)
+            ABB(Argo CD)
+            ABC(Loki)
+            ABD(Ingress)
+            ABE(Operators)
         end
     end
 
@@ -41,16 +48,13 @@ noisy-neighboring CoreDNS, kube-proxy, etc.).
 
 The cluster will use multiple node pools as follows (topology as of 2026-8-11):
 
-- `infra`: 1 x e2-medium node for running infrastructure workloads, such as Argo CD, etc.
+- `infra`: 2 x e2-small nodes for running infrastructure workloads, such as Argo CD, etc.
 - `app`: 2 x e2-small nodes for running application workloads
 
-> In a production setting, it would be ideal to have multiple `infra` nodes for
-> failure-tolerance, but this lab is being run on a rather small budget.
-
-> The `app` node pool has two nodes for practice distributing workloads across nodes.
+> The `app` node pool also has two nodes for practice distributing workloads across nodes.
 > To mitigate costs, we're using e2-small.
 
-Node taints and labels are managed declaratively through the OpenTofu.
+Node taints and labels are managed declaratively through the OpenTofu resources.
 
 ## Consequences
 
@@ -64,4 +68,3 @@ Node taints and labels are managed declaratively through the OpenTofu.
 
 - Introduces operational overhead
 - Higher cost than a single-node cluster
-- The infra pool remains a single point of failure in this lab environment

@@ -16,3 +16,7 @@ skip-check:
   # Metadata server:
   # This should be enabled; this check appears broken
   - CKV_GCP_69
+  # ADR003
+  - CKV_GCP_8
+  # ADR004
+  - CKV_GCP_1

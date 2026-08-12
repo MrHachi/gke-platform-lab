@@ -21,8 +21,10 @@ locals {
       nodes        = 1
       location     = local.zone
 
+      # From the docs: https://docs.cloud.google.com/kubernetes-engine/docs/how-to/workload-separation#create_a_cluster_with_node_taints
+      # components.gke.io/gke-managed-components=true:NoSchedule
       taints = [
-        { key = "workload", value = "infra", effect = "NO_SCHEDULE" }
+        { key = "components.gke.io/gke-managed-components", value = "true", effect = "NO_SCHEDULE" }
       ]
       labels = {
         workload = "infra"

@@ -60,9 +60,55 @@ Set the following repository variables for GitHub Actions:
 > As this is a lab project, we aren't setting these in specific environments.
 > In a production setting it would likely be preferable to separate configuration between `dev`, `stg`, and `prd`.
 
-# Setup verification
+### Verify setup
 
 1. Cut a branch from main
 2. Modify any of the files under `infrastructure/stacks`
 3. Open a PR to main
 4. Verify that the `tf-stack-ci` workflow runs and that plan results are commented on the PR
+
+## GKE Cluster
+
+### Prerequisites
+
+- GCP Project and GitHub bootstrapped according to the procedures above
+
+### Procedure
+
+1. Deploy the network stack (managed manually):
+    ```bash
+    cd infrastructure/stacks/network
+    tofu plan -out=tfplan # Review plan before proceeding
+    tofu apply tfplan
+    ```
+2. In GitHub Actions, run the `TF Stack CD` workflow manually (or merge a PR that contains changes under `infrastructure/stacks/platform`)
+3. Pull the latest version of the `main` branch
+4. Tag the current commit with the pattern `platform-v**` (i.e. `platform-v0.0.1`)
+5. Push the tag to the remote
+
+### Post setup
+
+1. Ensure the `gke-gcloud-auth-plugin` gcloud plugin is installed
+    ```bash
+    gcloud components install gke-gcloud-auth-plugin
+    ```
+2. Log in
+    ```bash
+    gcloud auth login
+    ```
+3. Set project:
+    ```bash
+    gcloud config set project {BOOTSTRAPPED_PROJECT}
+    ```
+4. Authenticate with GKE:
+    - This lab uses a zonal GKE cluster for savings
+    - OpenTofu creates it in the `us-south1-a` zone
+    ```bash
+    gcloud container clusters get-credentials lab-platform-gke --zone {CLUSTER_ZONE}
+    ```
+
+### Verify setup
+
+```bash
+kubectl get nodes
+```

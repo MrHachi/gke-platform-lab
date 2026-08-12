@@ -31,8 +31,7 @@ resource "google_container_cluster" "main" {
 
   network    = var.vpc_name
   subnetwork = var.subnet_name
-  # networking_mode = "VPC_NATIVE"
-  #
+
   ip_allocation_policy {
     cluster_secondary_range_name  = var.pods_range_name
     services_secondary_range_name = var.services_range_name
@@ -51,9 +50,23 @@ resource "google_container_cluster" "main" {
   }
 
   enable_intranode_visibility = true
-  # networking_mode = "VPC_NATIVE" (default)
 
+  # networking_mode = "VPC_NATIVE" (default)
   # enable_shielded_nodes = true (default)
+
+  monitoring_config {
+    # ADR002
+    managed_prometheus {
+      enabled = false
+    }
+    # ADR003
+    enable_components = []
+  }
+
+  logging_config {
+    # ADR004
+    enable_components = []
+  }
 
   workload_identity_config {
     workload_pool = "${data.google_project.current.project_id}.svc.id.goog"

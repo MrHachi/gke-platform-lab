@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # In production we would want to pin this to a version, but using the latest version every time is fine
+  # for this lab project.
+  - https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml

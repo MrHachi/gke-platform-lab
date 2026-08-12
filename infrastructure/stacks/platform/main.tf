@@ -18,8 +18,8 @@ locals {
   # ADR001
   nodepools = {
     "infra" = {
-      machine_type = "e2-medium"
-      nodes        = 1
+      machine_type = "e2-small"
+      nodes        = 2
       location     = local.zone
 
       # From the docs: https://docs.cloud.google.com/kubernetes-engine/docs/how-to/workload-separation#create_a_cluster_with_node_taints

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-TEMPLATE_DIR="${SCRIPT_DIR}/../templates"
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 argo_cd_namespace="${ARGO_CD_NAMESPACE:-argocd}"
 
@@ -14,7 +13,8 @@ ensure_namespace() {
 
 ensure_argocd() {
     # From the docs: https://argo-cd.readthedocs.io/en/stable/getting_started/#1-install-argo-cd
-    kubectl apply -n "${argo_cd_namespace}" -f "${TEMPLATE_DIR}/argocd.yml" \
+    kubectl kustomize "${SCRIPT_DIR}/overlays/infra-nodes" \
+        | kubectl apply -n "${argo_cd_namespace}" -f - \
         --server-side \
         --force-conflicts
 }

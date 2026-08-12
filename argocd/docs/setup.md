@@ -22,7 +22,7 @@ export ARGO_CD_NAMESPACE="argocd"
 Run the idempotent Argo CD bootstrapping script:
 
 ```bash
-./argocd/scripts/bootstrap.sh
+./argocd/bootstrap/bootstrap.sh
 ```
 
 ## Verify setup

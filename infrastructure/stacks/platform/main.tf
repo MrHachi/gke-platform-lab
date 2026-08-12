@@ -13,8 +13,9 @@ locals {
   gke_version_prefix = "1.36."
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
-  modules_version = "module/platform/v0.1.0"
+  modules_version = "module/platform/v0.1.1"
 
+  # ADR001
   nodepools = {
     "infra" = {
       machine_type = "e2-medium"

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prom
+spec:
+  serviceName: prom
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prom
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prom
+
+    spec:
+      containers:
+        - name: prom
+          image: prom/prometheus:v3.5.0
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+          ports:
+            - containerPort: 9090
+
+          env:
+            # To be consumed by prometheus.yml when setting external labels
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
+          volumeMounts:
+            - name: prom-config
+              mountPath: /etc/prometheus
+
+            - name: data
+              mountPath: /prometheus
+
+      volumes:
+        - name: prom-config
+          configMap:
+            name: prom-cm
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi

@@ -8,7 +8,7 @@
 
 > See [infrastucture/docs/setup.md](infrastructure/docs/setup.md)
 
-- `argocd` CLI tool installed (setup verification only)
+- `argocd` CLI tool installed
 
 ## Procedure
 

@@ -22,6 +22,10 @@ skip-check:
   # GCS bucket access logging:
   # Out of scope for this lab project
   - CKV_GCP_62
+  # GCS bucket log-to-self:
+  # Checkov thinks this bucket is sending access logs to itself
+  # It is not
+  - CKV_GCP_63
   # ADR003
   - CKV_GCP_8
   # ADR004

@@ -16,6 +16,16 @@ skip-check:
   # Metadata server:
   # This should be enabled; this check appears broken
   - CKV_GCP_69
+  # GCS bucket versioning:
+  # Out of scope for this lab project; we don't care if Loki's data disappears here
+  - CKV_GCP_78
+  # GCS bucket access logging:
+  # Out of scope for this lab project
+  - CKV_GCP_62
+  # GCS bucket log-to-self:
+  # Checkov thinks this bucket is sending access logs to itself
+  # It is not
+  - CKV_GCP_63
   # ADR003
   - CKV_GCP_8
   # ADR004

@@ -29,7 +29,7 @@ serviceAccount:
   create: true
   name: loki
   annotations:
-    iam.gke.io/gcp-service-account: loki@gke-platform-lab.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: observability-loki@gke-platform-lab.iam.gserviceaccount.com
 
 deploymentMode: SingleBinary
 

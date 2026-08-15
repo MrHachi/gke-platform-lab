@@ -85,7 +85,7 @@ module "loki_sa" {
 
   stack = local.stack
 
-  id           = "loki"
+  id           = "observability-loki"
   display_name = "Loki"
   description  = "Service account for GCS access by Loki"
 

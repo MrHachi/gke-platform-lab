@@ -36,6 +36,12 @@ deploymentMode: SingleBinary
 singleBinary:
   replicas: 1
 
+  tolerations:
+    - key: "components.gke.io/gke-managed-components"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
 # Zero out replica counts of other deployment modes
 backend:
   replicas: 0

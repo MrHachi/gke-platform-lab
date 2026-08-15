@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prom
+  namespace: {{ .Values.namespaces.app }}
+  finalizers:
+    # Foreground cascading deletion (delete dependencies then delete App)
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    {{- include "observability.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: prometheus
+spec:
+  project: {{ default .Values.project "default" }}
+  source:
+    repoURL: https://github.com/MrHachi/gke-platform-lab.git
+    targetRevision: {{ default "main" .Values.prometheus.targetRevision }}
+    path: observability/prometheus
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.namespaces.component }}
+
+  # Extra information to show in the Argo CD Application details tab
+  info:
+    - name: "Prometheus:"
+      value: "https://TODO.todo"
+
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true # Delete resources no longer in git (if false these are orphaned if not found)
+      selfHeal: true
+      allowEmpty: false
+
+    # Retry with exponential backoff settings
+    retry:
+      limit: 10
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 5m
+
+  revisionHistoryLimit: 10

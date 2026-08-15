@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+  # To distinguish data ownership in the TSDB
+  external_labels:
+    cluster: gke-platform-lab
+    replica: ${POD_NAME} # Environment variable expansion; see sts.yml
+
+# From the Getting Started tutorial; to be tuned as necessary
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+  # To be added in a future PR
+  # - job_name: node_exporter
+  #   static_configs:
+  #     - targets:
+  #         - localhost:9100

@@ -1,0 +1,9 @@
+apiVersion: v2
+name: observability
+description: A Helm chart to install the observability stack on gke-platform-lab
+
+type: application
+
+version: 0.0.1
+
+appVersion: "0.0.1"

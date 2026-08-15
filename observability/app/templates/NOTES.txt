@@ -1,0 +1,28 @@
+Observability App-of-Apps installed.
+
+The parent Argo CD Application is:
+{{ .Release.Name }}
+
+Child Applications should appear in:
+namespace: {{ .Values.namespaces.app }}
+
+Check their status with:
+
+kubectl -n {{ .Values.namespaces.app }} get applications
+
+Or:
+
+argocd app get {{ .Release.Name }}
+argocd app list
+
+The child Applications currently manage:
+
+- Loki
+- Prometheus
+
+The workloads are deployed into:
+
+namespace: {{ .Values.namespaces.component }}
+
+Remember that this chart must be rendered by Argo CD or installed into
+the Argo CD namespace with permission to create Application resources.

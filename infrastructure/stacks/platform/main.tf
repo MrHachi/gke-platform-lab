@@ -13,7 +13,7 @@ locals {
   gke_version_prefix = "1.36."
 
   modules_path    = "git::https://github.com/MrHachi/gke-platform-lab.git//infrastructure/modules/platform"
-  modules_version = "module/platform/v0.1.1"
+  modules_version = "module/platform/v0.2.0"
 
   # ADR001
   nodepools = {
@@ -78,4 +78,37 @@ module "gke_nodepool" {
 
   taints            = each.value.taints
   kubernetes_labels = each.value.labels
+}
+
+module "loki_sa" {
+  source = "${local.modules_path}/workload-sa?ref=${local.modules_version}"
+
+  stack = local.stack
+
+  id           = "loki"
+  display_name = "Loki"
+  description  = "Service account for GCS access by Loki"
+
+  workload_namespace = "observability"
+  workload_name      = "loki"
+}
+
+module "loki_bucket" {
+  source = "${local.modules_path}/gcs?ref=${local.modules_version}"
+
+  stack = local.stack
+
+  # Intentionally set with the region since we aren't creating a Rapid Bucket
+  location = local.region
+
+  name_base = "loki-bucket"
+  accessors = {
+    (module.loki_sa.member) = {
+      role = "role/storage.objectUser"
+    }
+  }
+
+  object_expiry = {
+    days = 30
+  }
 }

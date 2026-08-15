@@ -19,3 +19,13 @@ variable "description" {
   default     = null
   description = "Service account description"
 }
+
+variable "workload_namespace" {
+  type        = string
+  description = "Namespace of the GKE workload that will assume this service account"
+}
+
+variable "workload_name" {
+  type        = string
+  description = "Name of the GKE workload that will assume this service account"
+}

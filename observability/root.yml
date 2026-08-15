@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+  finalizers:
+    # Foreground cascading deletion (delete dependencies then delete App)
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: observability
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/MrHachi/gke-platform-lab.git
+    targetRevision: main
+    path: observability/app
+
+    helm:
+      valuesObject:
+        namespaces:
+          app: argocd
+          component: observability
+        prometheus:
+          targetRevision: main
+        loki:
+          targetRevision: main
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true # Delete resources no longer in git (if false these are orphaned if not found)
+      selfHeal: true
+      allowEmpty: false
+
+    syncOptions:
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/part-of: observability
+        app.kubernetes.io/component: namespace
+      annotations:
+        description: "Namespace for observability components. Managed by Argo CD."
+
+    # Retry with exponential backoff settings
+    retry:
+      limit: 10
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 5m
+
+  revisionHistoryLimit: 10

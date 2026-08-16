@@ -25,7 +25,7 @@ variable "workload_namespace" {
   description = "Namespace of the GKE workload that will assume this service account"
 }
 
-variable "workload_name" {
+variable "workload_sa" {
   type        = string
-  description = "Name of the GKE workload that will assume this service account"
+  description = "Name of the GKE workload's service account that will assume this GCP service account"
 }

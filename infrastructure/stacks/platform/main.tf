@@ -104,7 +104,7 @@ module "loki_bucket" {
   name_base = "loki-bucket"
   accessors = {
     (module.loki_sa.member) = {
-      role = "role/storage.objectUser"
+      role = "roles/storage.objectUser"
     }
   }
 

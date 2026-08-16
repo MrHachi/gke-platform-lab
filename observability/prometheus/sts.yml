@@ -16,6 +16,9 @@ spec:
         app.kubernetes.io/name: prom
 
     spec:
+      spec:
+        securityContext:
+          fsGroup: 65534 # group ID of the "nobody" group (inspected in locally running prometheus container)
       tolerations:
         - key: "components.gke.io/gke-managed-components"
           operator: "Equal"

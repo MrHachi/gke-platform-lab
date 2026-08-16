@@ -59,6 +59,7 @@ ensure_apis() {
         iamcredentials.googleapis.com \
         cloudresourcemanager.googleapis.com \
         storage.googleapis.com \
+        cloudquotas.googleapis.com \
         --project "${project_id}"
 }
 

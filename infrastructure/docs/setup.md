@@ -112,3 +112,18 @@ Set the following repository variables for GitHub Actions:
 ```bash
 kubectl get nodes
 ```
+
+## Quotas
+
+Node pool Kubernetes version updates will fail due to the regional quota being stuck at 500GB.
+(This lab creates a 4 node cluster, with each node requesting 100GB of SSD-updates will push this
+past 500GB and cause an error.)
+
+### Prerequisites
+
+- `bootstrap.sh` script executed (enables the `cloudquotas.googleapis.com` API)
+
+### Procedure
+
+Log in to the GCP console and increase the **Persistent Disk SSD (GB)** quota for the
+**Compute Engine API** service in your region to 1000GB.

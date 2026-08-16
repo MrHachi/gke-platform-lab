@@ -31,11 +31,26 @@ serviceAccount:
   annotations:
     iam.gke.io/gcp-service-account: observability-loki@gke-platform-lab.iam.gserviceaccount.com
 
-deploymentMode: SingleBinary
+deploymentMode: Monolithic
 
 singleBinary:
   replicas: 1
 
+defaults:
+  tolerations:
+    - key: "components.gke.io/gke-managed-components"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+chunksCache:
+  tolerations:
+    - key: "components.gke.io/gke-managed-components"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+resultsCache:
   tolerations:
     - key: "components.gke.io/gke-managed-components"
       operator: "Equal"

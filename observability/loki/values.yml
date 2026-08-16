@@ -44,18 +44,10 @@ defaults:
       effect: "NoSchedule"
 
 chunksCache:
-  tolerations:
-    - key: "components.gke.io/gke-managed-components"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
+  enabled: false
 
 resultsCache:
-  tolerations:
-    - key: "components.gke.io/gke-managed-components"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
+  enabled: false
 
 # Zero out replica counts of other deployment modes
 backend:

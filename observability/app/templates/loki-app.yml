@@ -12,9 +12,9 @@ metadata:
 spec:
   project: {{ default .Values.project "default" }}
   sources:
-    - repoURL: https://grafana-community.github.io/helm-charts
+    - repoURL: ghcr.io/grafana-community/helm-charts
       chart: loki
-      targetRevision: 7.3.0
+      targetRevision: 18.9.0
       helm:
         valueFiles:
           - $gke-platform-lab/observability/loki/values.yml

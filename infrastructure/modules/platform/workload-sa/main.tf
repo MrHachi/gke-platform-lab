@@ -14,5 +14,5 @@ resource "google_service_account_iam_member" "gke_assume" {
   service_account_id = google_service_account.main.name
   role               = "roles/iam.workloadIdentityUser"
 
-  member = "serviceAccount:${data.google_project.current.project_id}.svc.id.goog[${var.workload_namespace}/${var.workload_name}]"
+  member = "serviceAccount:${data.google_project.current.project_id}.svc.id.goog[${var.workload_namespace}/${var.workload_sa}]"
 }

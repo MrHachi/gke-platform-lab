@@ -11,9 +11,7 @@ loki:
       chunks: lab-platform-loki-bucket-926557058358
       ruler: lab-platform-loki-bucket-926557058358
 
-    gcs:
-      # Nothing credential-related here if using GKE Workload Identity
-      # The chart's GCS client will use Google credentials available to the Pod.
+    gcs: {}
 
   schemaConfig:
     configs:

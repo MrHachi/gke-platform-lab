@@ -10,7 +10,7 @@ metadata:
     {{- include "observability.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: loki
 spec:
-  project: {{ default .Values.project "default" }}
+  project: {{ default "default" .Values.project }}
   sources:
     - repoURL: ghcr.io/grafana-community/helm-charts
       chart: loki
@@ -20,7 +20,7 @@ spec:
           - $gke-platform-lab/observability/loki/values.yml
 
     - repoURL: https://github.com/MrHachi/gke-platform-lab.git
-      targetRevision: {{ default "main" .Values.loki.targetRevision }}
+      targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.loki) }}
       ref: gke-platform-lab
 
   destination:

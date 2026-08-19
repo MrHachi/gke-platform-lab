@@ -10,10 +10,10 @@ metadata:
     {{- include "observability.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: prometheus
 spec:
-  project: {{ default .Values.project "default" }}
+  project: {{ default "default" .Values.project }}
   source:
     repoURL: https://github.com/MrHachi/gke-platform-lab.git
-    targetRevision: {{ default "main" .Values.prometheus.targetRevision }}
+    targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.prometheus) }}
     path: observability/prometheus
 
   destination:

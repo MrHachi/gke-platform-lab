@@ -7,3 +7,20 @@ controller:
       operator: "Equal"
       value: "true"
       effect: "NoSchedule"
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data-alloy
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+alloy:
+  storagePath: /var/lib/alloy
+  mounts:
+    extra:
+      - name: data-alloy
+        mountPath: /var/lib/alloy

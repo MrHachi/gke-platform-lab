@@ -10,7 +10,7 @@ metadata:
     {{- include "observability.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: alloy
 spec:
-  project: {{ default .Values.project "default" }}
+  project: {{ default "default" .Values.project }}
   sources:
     - repoURL: ghcr.io/grafana/helm-charts
       chart: alloy
@@ -20,7 +20,7 @@ spec:
           - $gke-platform-lab/observability/alloy/values.yml
 
     - repoURL: https://github.com/MrHachi/gke-platform-lab.git
-      targetRevision: {{ default "main" .Values.alloy.targetRevision }}
+      targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.alloy) }}
       ref: gke-platform-lab
 
   destination:

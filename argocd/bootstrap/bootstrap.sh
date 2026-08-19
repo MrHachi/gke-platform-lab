@@ -13,7 +13,7 @@ ensure_namespace() {
 
 ensure_argocd() {
     # From the docs: https://argo-cd.readthedocs.io/en/stable/getting_started/#1-install-argo-cd
-    kubectl kustomize "${SCRIPT_DIR}/overlays/infra-nodes" \
+    kubectl kustomize "${SCRIPT_DIR}/overlays" \
         | kubectl apply -n "${argo_cd_namespace}" -f - \
         --server-side \
         --force-conflicts

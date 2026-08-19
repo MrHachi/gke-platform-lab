@@ -24,6 +24,8 @@ spec:
           targetRevision: main
         loki:
           targetRevision: main
+        alloy:
+          targetRevision: main
 
   destination:
     server: https://kubernetes.default.svc

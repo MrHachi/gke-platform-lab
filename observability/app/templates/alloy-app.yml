@@ -12,9 +12,9 @@ metadata:
 spec:
   project: {{ default "default" .Values.project }}
   sources:
-    - repoURL: ghcr.io/grafana/helm-charts
+    - repoURL: https://grafana.github.io/helm-charts
       chart: alloy
-      targetRevision: 1.11.1
+      targetRevision: 1.11.0
       helm:
         valueFiles:
           - $gke-platform-lab/observability/alloy/values.yml

@@ -23,10 +23,6 @@ spec:
       targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.alloy) }}
       ref: gke-platform-lab
 
-    - repoURL: https://github.com/MrHachi/gke-platform-lab.git
-      targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.alloy) }}
-      path: observability/alloy/config
-
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespaces.component }}

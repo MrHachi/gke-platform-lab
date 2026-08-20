@@ -52,7 +52,7 @@ alloy:
         role = "ingress"
       }
 
-      loki.source.file "log_scrape" {
+      loki.source.kubernetes "log_reader" {
         targets    = array.concat(
             discovery.kubernetes.pods.targets,
             discovery.kubernetes.nodes.targets,
@@ -62,7 +62,6 @@ alloy:
           )
         // forward_to = [loki.process.filter_logs.receiver]
         forward_to = [loki.write.grafana_loki.receiver]
-        tail_from_end = true
       }
 
       // loki.process "filter_logs" {

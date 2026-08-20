@@ -36,33 +36,10 @@ alloy:
         role = "pod"
       }
 
-      discovery.kubernetes "nodes" {
-        role = "node"
-      }
-
-      discovery.kubernetes "services" {
-        role = "service"
-      }
-
-      discovery.kubernetes "endpointslices" {
-        role = "endpointslice"
-      }
-
-      discovery.kubernetes "ingresses" {
-        role = "ingress"
-      }
-
-      loki.source.file "log_scrape" {
-        targets    = array.concat(
-            discovery.kubernetes.pods.targets,
-            discovery.kubernetes.nodes.targets,
-            discovery.kubernetes.services.targets,
-            discovery.kubernetes.endpointslices.targets,
-            discovery.kubernetes.ingresses.targets,
-          )
+      loki.source.kubernetes "log_reader" {
+        targets = discovery.kubernetes.pods.targets
         // forward_to = [loki.process.filter_logs.receiver]
         forward_to = [loki.write.grafana_loki.receiver]
-        tail_from_end = true
       }
 
       // loki.process "filter_logs" {
@@ -76,7 +53,7 @@ alloy:
 
       loki.write "grafana_loki" {
         endpoint {
-          url = "http://loki.observability.svc.cluster.local/loki/api/v1/push"
+          url = "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push"
 
           // basic_auth {
           //  username = "admin"

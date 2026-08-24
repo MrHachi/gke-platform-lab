@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: graf
+  namespace: {{ .Values.namespaces.app }}
+  finalizers:
+    # Foreground cascading deletion (delete dependencies then delete App)
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    {{- include "observability.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+spec:
+  project: {{ default "default" .Values.project }}
+  source:
+    repoURL: https://github.com/MrHachi/gke-platform-lab.git
+    targetRevision: {{ dig "targetRevision" "main" (default (dict) .Values.grafana) }}
+    path: observability/grafana
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.namespaces.component }}
+
+  # Extra information to show in the Argo CD Application details tab
+  info:
+    - name: "Grafana:"
+      value: "https://TODO.todo"
+
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true # Delete resources no longer in git (if false these are orphaned if not found)
+      selfHeal: true
+      allowEmpty: false
+
+    # Retry with exponential backoff settings
+    retry:
+      limit: 10
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 5m
+
+  revisionHistoryLimit: 10

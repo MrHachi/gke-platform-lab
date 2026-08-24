@@ -5,6 +5,9 @@ metadata:
     app: grafana
   name: grafana
 spec:
+  # Needed while using SQLite (we can't use rolling deployment with current PVC setup)
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: grafana

@@ -54,7 +54,7 @@ spec:
             - mountPath: /var/lib/grafana
               name: grafana-pv
 
-            - mountPath: /etc/grafana
+            - mountPath: /usr/share/grafana/conf
               name: graf-config
 
       volumes:

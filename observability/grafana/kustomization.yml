@@ -9,4 +9,4 @@ resources:
 configMapGenerator:
   - name: graf-cm
     files:
-      - grafana.ini
+      - custom.ini

@@ -54,8 +54,9 @@ spec:
             - mountPath: /var/lib/grafana
               name: grafana-pv
 
-            - mountPath: /usr/share/grafana/conf
+            - mountPath: /usr/share/grafana/conf/custom.ini
               name: graf-config
+              subPath: custom.ini
 
       volumes:
         - name: grafana-pv

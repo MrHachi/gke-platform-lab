@@ -54,15 +54,14 @@ spec:
             - mountPath: /var/lib/grafana
               name: grafana-pv
 
-            - mountPath: /usr/share/grafana/conf/custom.ini
-              name: graf-config
-              subPath: custom.ini
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: datasources
 
       volumes:
         - name: grafana-pv
           persistentVolumeClaim:
             claimName: grafana-pvc
 
-        - name: graf-config
+        - name: datasources
           configMap:
-            name: graf-cm
+            name: graf-ds-cm

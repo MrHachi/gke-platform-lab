@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - sts.yml
   - svc.yml
+  - node-exporter/ds.yml
+  - node-exporter/rbac.yml
 
 configMapGenerator:
   - name: prom-cm

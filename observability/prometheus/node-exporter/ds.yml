@@ -13,8 +13,9 @@ spec:
 
   template:
     metadata:
-      app.kubernetes.io/name: prom
-      app.kubernetes.io/component: node-exporter
+      labels:
+        app.kubernetes.io/name: prom
+        app.kubernetes.io/component: node-exporter
     spec:
       containers:
         - name: node-exporter

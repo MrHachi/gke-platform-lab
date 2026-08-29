@@ -100,6 +100,14 @@ alloy:
       }
 
       loki.process "pod_logs" {
+        stage.match {
+          selector = "{controller_kind!=\"StatefulSet\"}"
+
+          stage.label_drop {
+            values = ["instance", "pod"]
+          }
+        }
+
         stage.static_labels {
             values = {
               cluster = "gke-platform-lab",
@@ -109,22 +117,8 @@ alloy:
         forward_to = [loki.write.grafana_loki.receiver]
       }
 
-      // loki.process "filter_logs" {
-      //   stage.drop {
-      //     source = ""
-      //     expression  = ".*Connection closed by authenticating user root"
-      //     drop_counter_reason = "noisy"
-      //   }
-      //   forward_to = [loki.write.grafana_loki.receiver]
-      // }
-
       loki.write "grafana_loki" {
         endpoint {
           url = "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push"
-
-          // basic_auth {
-          //  username = "admin"
-          //  password = "admin"
-          // }
         }
       }

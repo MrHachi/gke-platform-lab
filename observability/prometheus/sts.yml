@@ -15,9 +15,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: prom
-      app.kubernetes.io/component: prometheus
+        app.kubernetes.io/component: prometheus
 
     spec:
+      serviceAccountName: prom
       securityContext:
         runAsUser: 65534
         runAsNonRoot: true

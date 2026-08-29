@@ -15,7 +15,52 @@ patches:
       kind: StatefulSet
       labelSelector: app.kubernetes.io/part-of=argocd
 
+  - path: affinities.yml
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/part-of=argocd
+
+  - path: affinities.yml
+    target:
+      kind: StatefulSet
+      labelSelector: app.kubernetes.io/part-of=argocd
+
   - path: reconciliation.yml
     target:
       kind: ConfigMap
       name: argocd-cm
+
+  - path: requests-application-controller.yml
+    target:
+      kind: StatefulSet
+      name: argocd-application-controller
+
+  - path: requests-applicationset-controller.yml
+    target:
+      kind: Deployment
+      name: argocd-applicationset-controller
+
+  - path: requests-dex-server.yml
+    target:
+      kind: Deployment
+      name: argocd-dex-server
+
+  - path: requests-notifications-controller.yml
+    target:
+      kind: Deployment
+      name: argocd-notifications-controller
+
+  - path: requests-redis.yml
+    target:
+      kind: Deployment
+      name: argocd-redis
+
+  - path: requests-repo-server.yml
+    target:
+      kind: Deployment
+      name: argocd-repo-server
+
+  - path: requests-server.yml
+    target:
+      kind: Deployment
+      name: argocd-server

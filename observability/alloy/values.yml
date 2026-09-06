@@ -52,6 +52,12 @@ alloy:
         }
 
         rule {
+          source_labels = ["__meta_kubernetes_pod_node_name"]
+          action = "replace"
+          target_label = "node"
+        }
+
+        rule {
           source_labels = ["__meta_kubernetes_pod_container_name"]
           action = "replace"
           target_label = "container"
@@ -112,6 +118,18 @@ alloy:
             values = {
               cluster = "gke-platform-lab",
             }
+        }
+
+        stage.logfmt {
+          mapping = {
+            "_extracted_level" = "level",
+          }
+        }
+
+        stage.labels {
+          values = {
+            "level" = "_extracted_level",
+          }
         }
 
         forward_to = [loki.write.grafana_loki.receiver]

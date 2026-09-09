@@ -24,4 +24,9 @@ kubectl apply -f observability/root.yml
 
 ## Verify setup
 
-TODO
+Open a port-forwarding session to ArgoCD and verify in the console that the `observability` Application
+and its children (`graf`, `alloy`, `loki`, and `prom`) exist and are being reconciled.
+
+```
+kubectl -n argocd port-forward svc/argocd-server 8080:443
+```

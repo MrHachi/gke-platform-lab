@@ -15,6 +15,9 @@ resource "google_container_cluster" "main" {
 
   location = var.zone
 
+  # acceptable for this non-critical lab project
+  deletion_protection = false
+
   # This is a lab, so we don't necessarily need STABLE releases (use REGULAR)
   # (Matches the setting on the nodepool module)
   release_channel {

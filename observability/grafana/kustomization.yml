@@ -11,3 +11,8 @@ configMapGenerator:
     files:
       - datasource-loki.yml
       - datasource-prom.yml
+
+  - name: graf-dash-cm
+    files:
+      - dashboards-cluster-health.json
+      - dashboards-default.yml

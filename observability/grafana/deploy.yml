@@ -57,6 +57,9 @@ spec:
             - mountPath: /etc/grafana/provisioning/datasources
               name: datasources
 
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: dashboards
+
       volumes:
         - name: grafana-pv
           persistentVolumeClaim:
@@ -65,3 +68,7 @@ spec:
         - name: datasources
           configMap:
             name: graf-ds-cm
+
+        - name: dashboards
+          configMap:
+            name: graf-dash-cm

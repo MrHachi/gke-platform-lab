@@ -24,4 +24,16 @@ kubectl apply -f observability/root.yml
 
 ## Verify setup
 
-TODO
+Open a port-forwarding session to ArgoCD and verify in the console that the `observability` Application
+and its children (`graf`, `alloy`, `loki`, and `prom`) exist and are being reconciled.
+
+```
+kubectl -n argocd port-forward svc/argocd-server 8080:443
+```
+
+Once provisioning completes, open a port-forwarding session to Grafana and verify that the
+`Health: lab-platform-cluster` dashboard exists and the graphs are populated with metrics.
+
+```
+kubectl -n observability port-forward svc/grafana 3000:3000
+```

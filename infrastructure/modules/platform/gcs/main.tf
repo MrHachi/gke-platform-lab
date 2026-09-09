@@ -14,6 +14,9 @@ resource "google_storage_bucket" "main" {
   storage_class               = "STANDARD"
   public_access_prevention    = "enforced"
 
+  # acceptable for this non-critical lab project
+  force_destroy = true
+
   dynamic "lifecycle_rule" {
     for_each = var.object_expiry != null ? [1] : []
     content {
